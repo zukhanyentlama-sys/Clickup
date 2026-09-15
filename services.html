@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Marketing Services — Pricing &amp; Packages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --power-blue:#E6B800;
+    --electric-blue:#F4C817;
+    --navy:#0E1F3D;
+    --navy-soft:#16294F;
+    --ink:#F5F6F8;
+    --slate:#9AA6BB;
+    --line:rgba(255,255,255,0.14);
+    --mist:#0A0A0B;
+    --white:#101E3A;
+    --live:#F4C817;
+    --gold:#F4C817;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter', sans-serif;
+    background:var(--mist);
+    color:var(--ink);
+    line-height:1.55;
+  }
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+  ul{list-style:none;}
+
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--electric-blue); outline-offset:3px; }
+
+  /* ---------- topbar (matches CV) ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:var(--navy);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 20px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .topbar .dots{display:flex; gap:6px;}
+  .topbar .dots span{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .dots .d1{background:#ff5f57;} .dots .d2{background:#febc2e;} .dots .d3{background:#28c840;}
+  .topbar .addr{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:#C9D3E6;
+    background:rgba(255,255,255,.06);
+    padding:6px 14px;
+    border-radius:20px;
+    display:flex; align-items:center; gap:8px;
+    text-decoration:none;
+  }
+  .addr .live-dot{width:7px; height:7px; border-radius:50%; background:var(--live); box-shadow:0 0 0 0 rgba(244,200,23,.6); animation:pulse 2s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(244,200,23,.55);}
+    70%{box-shadow:0 0 0 8px rgba(244,200,23,0);}
+    100%{box-shadow:0 0 0 0 rgba(244,200,23,0);}
+  }
+  .topbar nav{display:none; gap:18px;}
+  .topbar nav a{color:#C9D3E6; text-decoration:none; font-size:13.5px; font-weight:500;}
+  .topbar nav a:hover{color:#fff;}
+  @media(min-width:760px){ .topbar nav{display:flex;} }
+
+  .topbar.scrolled{ box-shadow:0 6px 20px rgba(0,0,0,.55); }
+
+  .menu-btn{
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:1px solid rgba(255,255,255,.2); color:#fff; border-radius:8px;
+    width:36px; height:32px; cursor:pointer; font-size:16px;
+  }
+  @media(min-width:760px){ .menu-btn{display:none;} }
+  .mobile-nav{
+    display:none; flex-direction:column; background:var(--navy-soft);
+    max-height:0; overflow:hidden; transition:max-height .35s ease;
+  }
+  .mobile-nav.open{ display:flex; max-height:220px; padding:10px 20px 16px; }
+  .mobile-nav a{ color:#C9D3E6; text-decoration:none; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.08); font-size:14px; }
+
+  /* ---------- scroll reveal ---------- */
+  [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+  [data-reveal].in-view{ opacity:1; transform:translateY(0); }
+
+  /* ---------- back to top ---------- */
+  .to-top{
+    position:fixed; right:20px; bottom:20px;
+    width:44px; height:44px; border-radius:50%;
+    background:var(--navy); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.5);
+    opacity:0; pointer-events:none; transform:translateY(10px);
+    transition:opacity .25s ease, transform .25s ease;
+    z-index:60; border:none; cursor:pointer;
+  }
+  .to-top.visible{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .to-top svg{width:18px;height:18px;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-soft) 55%, #050B14 100%);
+    color:#fff;
+    padding:64px 20px 56px;
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(244,200,23,.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244,200,23,.14) 1px, transparent 1px);
+    background-size:38px 38px;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 20%, black 40%, transparent 80%);
+  }
+  .hero-inner{max-width:760px; margin:0 auto; position:relative; z-index:2;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:.06em;
+    color:#F4C817;
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(244,200,23,.14);
+    border:1px solid rgba(244,200,23,.45);
+    padding:6px 12px; border-radius:20px;
+    margin-bottom:22px;
+  }
+  .hero h1{
+    font-size:clamp(2rem, 5.5vw, 3.2rem);
+    font-weight:700;
+    line-height:1.08;
+    letter-spacing:-.01em;
+  }
+  .hero p.tagline{
+    max-width:560px;
+    color:#C9D3E6;
+    margin:16px auto 0;
+    font-size:15.5px;
+  }
+
+  /* ---------- section shell ---------- */
+  section{ padding:56px 20px; }
+  .shell{ max-width:1120px; margin:0 auto; }
+  .section-head{ max-width:640px; margin:0 auto 40px; text-align:center; }
+  .section-head .kicker{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; color:var(--power-blue); text-transform:uppercase; }
+  .section-head h2{ font-size:clamp(1.5rem,3vw,2.1rem); margin-top:10px; }
+  .section-head p{ color:var(--slate); margin-top:10px; font-size:14.5px; }
+
+  /* ---------- pricing tiers ---------- */
+  .tiers{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    align-items:stretch;
+  }
+  @media(max-width:900px){ .tiers{grid-template-columns:1fr; max-width:440px; margin:0 auto;} }
+
+  .tier{
+    background:var(--white);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 26px;
+    display:flex; flex-direction:column;
+    box-shadow:0 1px 2px rgba(10,31,61,.04);
+    position:relative;
+  }
+  .tier.featured{
+    border:2px solid var(--electric-blue);
+    box-shadow:0 20px 40px rgba(244,200,23,.22);
+    transform:translateY(-8px);
+  }
+  @media(max-width:900px){ .tier.featured{transform:none;} }
+  .tier-badge{
+    position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+    background:var(--electric-blue); color:#0B0B0C;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.04em;
+    padding:5px 14px; border-radius:20px;
+    box-shadow:0 6px 14px rgba(244,200,23,.35);
+    white-space:nowrap;
+  }
+  .tier .size-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--power-blue);
+    background:#16294F; border:1px solid rgba(244,200,23,.35); padding:4px 10px; border-radius:6px;
+    display:inline-block; width:fit-content; margin-bottom:14px;
+  }
+  .tier h3{ font-size:20px; font-weight:700; }
+  .tier .for{ font-size:13px; color:var(--slate); margin-top:4px; margin-bottom:18px; }
+  .tier .price{ font-family:'Space Grotesk',sans-serif; font-size:32px; font-weight:700; color:var(--ink); }
+  .tier .price span{ font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:var(--slate); }
+  .tier .once-off{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--slate); margin-top:6px; margin-bottom:20px; }
+  .tier ul.includes{ display:flex; flex-direction:column; gap:11px; margin-bottom:24px; flex-grow:1; }
+  .tier ul.includes li{ display:flex; gap:9px; font-size:13.8px; align-items:flex-start; }
+  .tier ul.includes li::before{ content:"✓"; color:var(--electric-blue); font-weight:700; flex-shrink:0; }
+  .tier-cta{
+    display:block; text-align:center; text-decoration:none;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
+    padding:12px 20px; border-radius:9px;
+    background:var(--mist); color:var(--power-blue); border:1px solid var(--line);
+    transition:background .15s ease, transform .15s ease;
+  }
+  .tier.featured .tier-cta{ background:var(--electric-blue); color:#0B0B0C; border:none; box-shadow:0 6px 20px rgba(244,200,23,.35); }
+  .tier-cta:hover{ transform:translateY(-2px); }
+
+  /* ---------- a la carte services ---------- */
+  .service-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:16px;
+  }
+  .service-card{
+    background:var(--white); border:1px solid var(--line); border-radius:12px; padding:22px;
+    display:flex; flex-direction:column;
+  }
+  .service-card .ico{
+    width:38px; height:38px; border-radius:10px; background:#16294F; color:var(--power-blue);
+    display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:14px;
+  }
+  .service-card h4{ font-size:15.5px; font-weight:600; margin-bottom:6px; }
+  .service-card .desc{ font-size:13px; color:var(--slate); margin-bottom:14px; flex-grow:1; }
+  .service-card .from{ font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--power-blue); font-weight:500; margin-bottom:10px; }
+  .service-card .benefit{ font-size:12.5px; color:var(--ink); display:flex; gap:6px; }
+  .service-card .benefit::before{ content:"›"; color:var(--electric-blue); font-weight:700; }
+
+  /* ---------- why / trust ---------- */
+  .why-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px;
+  }
+  .why-card{ text-align:center; padding:10px; }
+  .why-card .num{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:26px; color:var(--electric-blue); }
+  .why-card h4{ font-size:14.5px; margin-top:8px; margin-bottom:6px; }
+  .why-card p{ font-size:12.8px; color:var(--slate); }
+
+  /* ---------- footer ---------- */
+  footer{ background:var(--navy); color:#cfdcf7; padding:44px 20px; }
+  .footer-inner{max-width:760px; margin:0 auto; text-align:center;}
+  footer h3{color:#fff; font-size:22px; margin-bottom:10px;}
+  footer p{font-size:14px; color:#B9C4D9; max-width:460px; margin:0 auto 22px;}
+  .footer-btns{display:flex; justify-content:center; gap:12px; flex-wrap:wrap;}
+  .btn{
+    font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:14.5px;
+    padding:13px 24px; border-radius:9px; border:none; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{ background:var(--electric-blue); color:#0B0B0C; box-shadow:0 6px 20px rgba(244,200,23,.35); }
+  .btn-primary:hover{ transform:translateY(-2px); }
+  .btn-ghost{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,.35); }
+  .btn-ghost:hover{ background:rgba(255,255,255,.09); transform:translateY(-2px); }
+  footer .fine{margin-top:30px; font-size:11.5px; color:#5A6B85; font-family:'IBM Plex Mono',monospace;}
+
+  .note{
+    max-width:1120px; margin:0 auto; padding:0 20px 8px;
+    font-size:12px; color:var(--slate); text-align:center;
+  }
+
+  /* ---------- partners ---------- */
+  .partners-section{
+    padding:44px 20px 8px;
+    background:var(--mist);
+  }
+  .partners-section .kicker{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; color:var(--power-blue); text-transform:uppercase; }
+  .partners-section h2{ font-size:clamp(1.4rem,2.8vw,1.9rem); margin-top:10px; max-width:26ch; }
+  .partners-section p{ color:var(--slate); font-size:13.5px; margin-top:10px; max-width:56ch; margin-bottom:26px; }
+  .partners-grid{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:14px;
+  }
+  @media(max-width:980px){ .partners-grid{ grid-template-columns:repeat(3, 1fr); } }
+  @media(max-width:620px){ .partners-grid{ grid-template-columns:repeat(2, 1fr); } }
+  .partner-card{
+    display:flex; flex-direction:column; justify-content:space-between;
+    gap:22px;
+    padding:20px 18px;
+    min-height:130px;
+    border-radius:10px;
+  }
+  .partner-card .partner-category{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    opacity:.75;
+  }
+  .partner-card .partner-name{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:17px;
+    line-height:1.15;
+  }
+  .partner-card.navy{ background:#0E1F3D; color:#F5F1E6; }
+  .partner-card.yellow{ background:#F4C817; color:#0E1F3D; }
+  .partner-card.black{ background:#111111; color:#F5F1E6; }
+</style>
+</head>
+<body>
+
+  <div class="topbar" id="mainTopbar">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+      <a class="addr" href="../index.html"><span class="live-dot"></span>digital-services</a>
+    </div>
+    <nav>
+      <a href="#packages">Packages</a>
+      <a href="#services">Services</a>
+      <a href="#why">Why us</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false">☰</button>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#packages">Packages</a>
+    <a href="#services">Services</a>
+    <a href="#why">Why us</a>
+    <a href="#contact">Contact</a>
+  </div>
+
+  <section class="partners-section" data-reveal>
+    <div class="shell">
+      <span class="kicker">Our network</span>
+      <h2>A range of partners across marketing, software and hiring.</h2>
+      <p>We work alongside a growing network of digital marketing agencies, software development studios and HR recruiters.</p>
+      <div class="partners-grid">
+        <div class="partner-card navy">
+          <span class="partner-category">Digital Marketing</span>
+          <span class="partner-name">Meridian Digital</span>
+        </div>
+        <div class="partner-card yellow">
+          <span class="partner-category">Digital Marketing</span>
+          <span class="partner-name">Northlight Media</span>
+        </div>
+        <div class="partner-card black">
+          <span class="partner-category">Digital Marketing</span>
+          <span class="partner-name">Brightwave Marketing</span>
+        </div>
+        <div class="partner-card yellow">
+          <span class="partner-category">Digital Marketing</span>
+          <span class="partner-name">Loopline Digital</span>
+        </div>
+        <div class="partner-card navy">
+          <span class="partner-category">Software Development</span>
+          <span class="partner-name">Vertex Softworks</span>
+        </div>
+        <div class="partner-card black">
+          <span class="partner-category">Software Development</span>
+          <span class="partner-name">CodeHaven Studios</span>
+        </div>
+        <div class="partner-card yellow">
+          <span class="partner-category">Software Development</span>
+          <span class="partner-name">Nimbus Software Co.</span>
+        </div>
+        <div class="partner-card black">
+          <span class="partner-category">HR Recruiters</span>
+          <span class="partner-name">Anchor Recruitment</span>
+        </div>
+        <div class="partner-card navy">
+          <span class="partner-category">HR Recruiters</span>
+          <span class="partner-name">TalentBridge HR</span>
+        </div>
+        <div class="partner-card yellow">
+          <span class="partner-category">HR Recruiters</span>
+          <span class="partner-name">Peoplewise Partners</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow"><span class="live-dot" style="background:#F4C817; animation:none;"></span> Websites, SEO &amp; Digital Marketing</div>
+      <h1>Digital marketing services that fit your business, not the other way around.</h1>
+      <p class="tagline">From a first website to a full growth engine — pick a package built for where your business is right now, or mix and match individual services.</p>
+    </div>
+  </header>
+
+  <!-- PACKAGES -->
+  <section id="packages">
+    <div class="shell">
+      <div class="section-head">
+        <span class="kicker">Packages by business size</span>
+        <h2>Three starting points. One goal — more customers finding you.</h2>
+        <p>Every package includes a dedicated point of contact and a monthly check-in, so you always know what's working.</p>
+      </div>
+
+      <div class="tiers">
+
+        <!-- SMALL -->
+        <div class="tier" data-reveal>
+          <span class="size-tag">Small business</span>
+          <h3>Starter</h3>
+          <div class="for">For new businesses &amp; solo founders getting online for the first time</div>
+          <div class="price">R3,800<span>/month</span></div>
+          <div class="once-off">+ R6,500 once-off website build</div>
+          <ul class="includes">
+            <li>5-page responsive website</li>
+            <li>Local SEO setup (Google Business Profile + on-page basics)</li>
+            <li>Social media: 2 platforms, 12 posts/month</li>
+            <li>Monthly performance summary</li>
+            <li>Email support, 48-hour response</li>
+          </ul>
+          <a class="tier-cta" href="#contact">Start with Starter</a>
+        </div>
+
+        <!-- MEDIUM -->
+        <div class="tier featured" data-reveal>
+          <span class="tier-badge">Most popular</span>
+          <span class="size-tag">Medium business</span>
+          <h3>Growth</h3>
+          <div class="for">For established SMEs ready to scale customer acquisition</div>
+          <div class="price">R12,600<span>/month</span></div>
+          <div class="once-off">+ R14,500 once-off website build (10 pages, booking-ready)</div>
+          <ul class="includes">
+            <li>Full technical + content SEO</li>
+            <li>Google Ads (PPC) setup &amp; management*</li>
+            <li>Social media: 3 platforms, 20 posts/month + community management</li>
+            <li>Monthly email newsletter + automation</li>
+            <li>Monthly strategy call + performance report</li>
+            <li>Priority support, 24-hour response</li>
+          </ul>
+          <a class="tier-cta" href="#contact">Start with Growth</a>
+        </div>
+
+        <!-- LARGE -->
+        <div class="tier" data-reveal>
+          <span class="size-tag">Large business</span>
+          <h3>Established</h3>
+          <div class="for">For multi-branch or corporate brands needing full-service marketing</div>
+          <div class="price">From R25,500<span>/month</span></div>
+          <div class="once-off">+ custom-quoted website (multi-location, integrations, CMS)</div>
+          <ul class="includes">
+            <li>Enterprise SEO + content siloing + competitor analysis</li>
+            <li>Multi-campaign Google &amp; Meta Ads management*</li>
+            <li>Social media: 4+ platforms + paid social</li>
+            <li>Ongoing content marketing (blog, video, case studies)</li>
+            <li>Dedicated account manager</li>
+            <li>Quarterly strategy review with leadership</li>
+          </ul>
+          <a class="tier-cta" href="#contact">Talk to us</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <p class="note">*Ad spend is separate from management fees and set directly by you — we'll recommend a starting budget during onboarding.</p>
+
+  <!-- A LA CARTE -->
+  <section id="services" style="background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+    <div class="shell">
+      <div class="section-head">
+        <span class="kicker">Individual services</span>
+        <h2>Prefer to mix and match? Every service, priced on its own.</h2>
+        <p>All prices are starting points — final pricing depends on scope, and we'll always confirm before starting work.</p>
+      </div>
+
+      <div class="service-grid">
+
+        <div class="service-card" data-reveal>
+          <div class="ico">◧</div>
+          <h4>Website Design &amp; Development</h4>
+          <div class="desc">A responsive site built around what your business actually sells, not a generic template.</div>
+          <div class="from">From R6,500 once-off</div>
+          <div class="benefit">Mobile-first, fast-loading, built to convert</div>
+        </div>
+
+        <div class="service-card" data-reveal>
+          <div class="ico">◎</div>
+          <h4>Search Engine Optimisation (SEO)</h4>
+          <div class="desc">Keyword research, on-page optimisation and technical fixes so people searching for what you offer actually find you.</div>
+          <div class="from">From R1,800/month</div>
+          <div class="benefit">Long-term, compounding organic traffic growth</div>
+        </div>
+
+        <div class="service-card" data-reveal>
+          <div class="ico">▲</div>
+          <h4>Paid Search (Google Ads / PPC)</h4>
+          <div class="desc">Campaign setup, keyword bidding and ongoing optimisation to get you in front of ready-to-buy customers.</div>
+          <div class="from">From R2,800/month + ad spend</div>
+          <div class="benefit">Fast, measurable results while SEO builds</div>
+        </div>
+
+        <div class="service-card" data-reveal>
+          <div class="ico">◐</div>
+          <h4>Social Media Management</h4>
+          <div class="desc">Content planning, posting and community replies across the platforms your customers actually use.</div>
+          <div class="from">From R2,500/month</div>
+          <div class="benefit">Consistent presence without the daily admin</div>
+        </div>
+
+        <div class="service-card" data-reveal>
+          <div class="ico">✎</div>
+          <h4>Content Marketing &amp; Copywriting</h4>
+          <div class="desc">Blog posts, product copy and landing pages written to inform, persuade and rank.</div>
+          <div class="from">From R1,500/month</div>
+          <div class="benefit">Builds authority and feeds SEO at the same time</div>
+        </div>
+
+        <div class="service-card" data-reveal>
+          <div class="ico">✉</div>
+          <h4>Email Marketing</h4>
+          <div class="desc">Newsletter design, list segmentation and automated flows (welcome, cart recovery, re-engagement).</div>
+          <div class="from">From R1,200/month</div>
+          <div class="benefit">One of the highest-return channels per rand spent</div>
+        </div>
+
+        <div class="service-card" data-reveal>
+          <div class="ico">◆</div>
+          <h4>Branding &amp; Graphic Design</h4>
+          <div class="desc">Logo, colour palette, and brand guidelines so everything you put out looks like it's from the same business.</div>
+          <div class="from">From R3,500 once-off</div>
+          <div class="benefit">A consistent look across every touchpoint</div>
+        </div>
+
+        <div class="service-card" data-reveal>
+          <div class="ico">▤</div>
+          <h4>Analytics &amp; Reporting</h4>
+          <div class="desc">Monthly, plain-language reports on what's working, what isn't, and what we're changing next.</div>
+          <div class="from">From R1,000/month</div>
+          <div class="benefit">No jargon — just what it means for your business</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section id="why">
+    <div class="shell">
+      <div class="section-head">
+        <span class="kicker">Why work with us</span>
+        <h2>Straightforward pricing. No lock-in contracts.</h2>
+      </div>
+      <div class="why-grid">
+        <div class="why-card" data-reveal>
+          <div class="num">01</div>
+          <h4>Month-to-month</h4>
+          <p>Cancel anytime with 30 days' notice — no long contracts to escape from.</p>
+        </div>
+        <div class="why-card" data-reveal>
+          <div class="num">02</div>
+          <h4>Plain reporting</h4>
+          <p>Reports written in business language, not marketing jargon.</p>
+        </div>
+        <div class="why-card" data-reveal>
+          <div class="num">03</div>
+          <h4>One point of contact</h4>
+          <p>You always know who to call — no ticket queues.</p>
+        </div>
+        <div class="why-card" data-reveal>
+          <div class="num">04</div>
+          <h4>Built for SA businesses</h4>
+          <p>Pricing, platforms and strategy shaped around the local market.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="footer-inner">
+      <h3>Not sure which package fits?</h3>
+      <p>Tell us a bit about your business and we'll recommend a starting point — no obligation.</p>
+      <div class="footer-btns">
+        <a href="tel:0729149706" class="btn btn-primary">📞 072 914 9706</a>
+        <a href="mailto:Zukhanyentlama@gmail.com" class="btn btn-ghost">✉ Email Us</a>
+      </div>
+      <div class="fine">Port Elizabeth, South Africa · Serving businesses across the Eastern Cape</div>
+    </div>
+  </footer>
+
+  <button class="to-top" id="toTop" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+
+<script>
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileNav = document.getElementById('mobileNav');
+  menuBtn.addEventListener('click', () => {
+    const open = mobileNav.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobileNav.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+  }));
+
+  // Sticky topbar shadow + back-to-top visibility
+  const mainTopbar = document.getElementById('mainTopbar');
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', () => {
+    mainTopbar.classList.toggle('scrolled', window.scrollY > 12);
+    toTop.classList.toggle('visible', window.scrollY > 500);
+  }, { passive:true });
+
+  toTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+  // Scroll-reveal animation, staggered within each grid
+  const groups = [document.querySelectorAll('.tiers [data-reveal]'), document.querySelectorAll('.service-grid [data-reveal]'), document.querySelectorAll('.why-grid [data-reveal]')];
+  if ('IntersectionObserver' in window) {
+    groups.forEach(group => {
+      group.forEach((el, i) => { el.style.transitionDelay = (i * 70) + 'ms'; });
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('[data-reveal]').forEach(el => el.classList.add('in-view'));
+  }
+</script>
+
+</body>
+</html>

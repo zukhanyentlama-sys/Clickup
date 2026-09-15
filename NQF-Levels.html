@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ilifa — Understanding NQF levels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0B0B;
+    --ink-soft:#1E1E1E;
+    --ochre:#245DFF;
+    --ochre-deep:#0B0B0B;
+    --ochre-soft:#FFF3B0;
+    --paper:#FFFFFF;
+    --paper-dim:#EAF0FF;
+    --ink-text:#FFFFFF;
+    --charcoal:#241F1A;
+    --sage:#245DFF;
+    --line:rgba(36,31,26,0.14);
+    --clay:#FFE600;
+    --green-1:#CFE0FF;
+    --green-2:#245DFF;
+    --green-3:#0B0B0B;
+    --yellow:#FFE600;
+    --yellow-deep:#E6CE00;
+    --blue:#245DFF;
+    --blue-deep:#0F3FCC;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    color:var(--charcoal);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  img,svg{display:block;}
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--sage);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+
+  /* ===== Nav ===== */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.1rem clamp(1.25rem,4vw,3rem);
+    background:rgba(255,255,255,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex; align-items:baseline; gap:0.5rem;
+    font-family:'Fraunces',serif; font-weight:600; font-size:1.35rem;
+  }
+  .brand .dot{color:var(--blue);}
+  .nav-links{
+    display:flex; align-items:center; gap:2rem;
+    font-size:0.92rem; font-weight:500;
+  }
+  .nav-links a{opacity:0.8; transition:opacity .2s;}
+  .nav-links a:hover{opacity:1;}
+  .nav-cta{
+    padding:0.6rem 1.3rem;
+    background:var(--ink);
+    color:var(--ink-text);
+    border-radius:2px;
+    font-size:0.88rem; font-weight:600;
+    transition:background .2s, color .2s;
+  }
+  .nav-cta:hover{background:var(--yellow); color:var(--ink);}
+  .nav.scrolled{
+    box-shadow:0 4px 18px rgba(11,11,11,0.08);
+    background:rgba(255,255,255,0.96);
+  }
+  .nav-toggle{
+    display:none;
+    width:38px; height:38px;
+    align-items:center; justify-content:center;
+    border-radius:2px;
+    border:1px solid var(--line);
+  }
+  .nav-toggle span{
+    position:relative;
+    display:block;
+    width:18px; height:2px;
+    background:var(--charcoal);
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .nav-toggle span::before,
+  .nav-toggle span::after{
+    content:"";
+    position:absolute; left:0;
+    width:18px; height:2px;
+    background:var(--charcoal);
+    transition:transform .25s ease, top .25s ease;
+  }
+  .nav-toggle span::before{ top:-6px; }
+  .nav-toggle span::after{ top:6px; }
+  .nav-toggle.open span{ background:transparent; }
+  .nav-toggle.open span::before{ top:0; transform:rotate(45deg); }
+  .nav-toggle.open span::after{ top:0; transform:rotate(-45deg); }
+  .mobile-nav{
+    display:none;
+    flex-direction:column;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    max-height:0;
+    transition:max-height .35s ease;
+  }
+  .mobile-nav a{
+    padding:0.9rem clamp(1.25rem,4vw,3rem);
+    font-size:0.95rem; font-weight:500;
+    border-top:1px solid var(--line);
+  }
+  .mobile-nav.open{ max-height:280px; }
+  @media (max-width:820px){
+    .nav-links a:not(.nav-cta){display:none;}
+    .nav-toggle{display:flex;}
+    .mobile-nav{display:flex;}
+  }
+
+  [data-reveal]{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  [data-reveal].in-view{ opacity:1; transform:translateY(0); }
+
+  .to-top{
+    position:fixed;
+    right:1.25rem; bottom:1.25rem;
+    width:44px; height:44px;
+    border-radius:50%;
+    background:var(--ink);
+    color:var(--ink-text);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(36,31,26,0.25);
+    opacity:0; pointer-events:none;
+    transform:translateY(10px);
+    transition:opacity .25s ease, transform .25s ease, background .2s ease, color .2s ease;
+    z-index:60;
+  }
+  .to-top:hover{ background:var(--yellow); color:var(--ink); }
+  .to-top.visible{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .to-top svg{width:18px;height:18px;}
+
+  .shell{ max-width:1120px; margin:0 auto; }
+
+  /* ===== Page intro ===== */
+  .page-hero{
+    padding:clamp(3rem,6vw,4.5rem) clamp(1.25rem,4vw,3rem) 1rem;
+  }
+  .page-hero .eyebrow{ color:var(--sage); margin-bottom:1rem; }
+  .page-hero h1{
+    font-size:clamp(1.9rem,4.2vw,3rem);
+    line-height:1.08;
+    max-width:24ch;
+    margin-bottom:1rem;
+  }
+  .page-hero p{
+    max-width:62ch;
+    font-size:1.02rem;
+    color:rgba(36,31,26,0.72);
+  }
+
+  /* ===== NQF ladder ===== */
+  .ladder-wrap{
+    padding:1.5rem clamp(1.25rem,4vw,3rem) 2rem;
+  }
+  .ladder{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fff;
+    overflow:hidden;
+  }
+  .rung{
+    position:relative;
+    display:grid;
+    grid-template-columns:96px 1fr;
+    border-bottom:1px solid var(--line);
+  }
+  .rung:last-child{ border-bottom:none; }
+
+  .rung-level{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:0.15rem;
+    padding:1.3rem 0.75rem;
+    background:var(--paper-dim);
+    border-right:1px solid var(--line);
+  }
+  .rung-level .num{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:1.7rem;
+    color:var(--ink);
+    line-height:1;
+  }
+  .rung-level .num-label{
+    font-family:'Space Mono',monospace;
+    font-size:0.62rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:rgba(36,31,26,0.45);
+  }
+
+  .rung-body{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1.25rem;
+    padding:1.2rem 1.5rem;
+    flex-wrap:wrap;
+  }
+  .rung-name{
+    font-weight:600;
+    font-size:1rem;
+  }
+  .rung-desc{
+    font-size:0.88rem;
+    color:rgba(36,31,26,0.62);
+    margin-top:0.2rem;
+    max-width:52ch;
+  }
+  .rung-band{
+    font-family:'Space Mono',monospace;
+    font-size:0.68rem;
+    letter-spacing:0.05em;
+    padding:0.32rem 0.65rem;
+    border-radius:20px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .band-school{ background:var(--yellow); color:var(--ink); }
+  .band-further{ background:#CFE0FF; color:var(--blue-deep); }
+  .band-higher{ background:var(--green-1); color:var(--green-3); }
+  .band-postgrad{ background:var(--green-2); color:#fff; }
+
+  .rung.is-current{
+    background:linear-gradient(90deg, rgba(185,130,47,0.06), transparent 40%);
+  }
+  .rung.is-current .rung-level{
+    background:var(--ink);
+  }
+  .rung.is-current .rung-level .num,
+  .rung.is-current .rung-level .num-label{
+    color:var(--ink-text);
+  }
+
+  /* ===== Rung meta / CTA ===== */
+  .rung-meta{
+    display:flex;
+    align-items:center;
+    gap:0.7rem;
+    flex-shrink:0;
+  }
+  .rung-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:0.35rem;
+    padding:0.5rem 0.95rem;
+    background:var(--ink);
+    color:var(--ink-text);
+    border-radius:20px;
+    font-family:'Space Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    white-space:nowrap;
+    transition:background .2s ease, color .2s ease, transform .2s ease;
+  }
+  .rung-btn:hover{
+    background:var(--yellow);
+    color:var(--ink);
+    transform:translateX(2px);
+  }
+  .rung-btn svg{ width:12px; height:12px; flex-shrink:0; }
+  .rung.is-current .rung-btn{
+    background:var(--yellow);
+    color:var(--ink);
+  }
+  .rung.is-current .rung-btn:hover{
+    background:var(--ink);
+    color:var(--ink-text);
+  }
+
+  @media (max-width:640px){
+    .rung{ grid-template-columns:74px 1fr; }
+    .rung-level{ padding:1rem 0.4rem; }
+    .rung-level .num{ font-size:1.35rem; }
+    .rung-body{ padding:1rem 1.1rem; }
+    .rung-meta{ width:100%; justify-content:space-between; }
+  }
+
+  /* ===== Band legend ===== */
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:1.4rem;
+    padding:1.3rem clamp(1.25rem,4vw,3rem) 0;
+  }
+  .legend-item{
+    display:flex; align-items:center; gap:0.5rem;
+    font-size:0.82rem;
+    color:rgba(36,31,26,0.65);
+  }
+  .legend-dot{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+  /* ===== Notes section ===== */
+  .notes{
+    padding:2.5rem clamp(1.25rem,4vw,3rem) 4rem;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:1.25rem;
+    max-width:1120px;
+    margin:0 auto;
+  }
+  .note-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:1.5rem 1.6rem;
+  }
+  .note-card h3{
+    font-size:1.02rem;
+    margin-bottom:0.6rem;
+  }
+  .note-card p{
+    font-size:0.88rem;
+    color:rgba(36,31,26,0.66);
+  }
+
+  footer{
+    padding:2.5rem clamp(1.25rem,4vw,3rem);
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:1rem;
+    font-size:0.85rem;
+    color:rgba(36,31,26,0.6);
+  }
+  .footer-contact{ display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap; }
+  .footer-contact a{ font-family:'Space Mono',monospace; font-weight:700; color:var(--ink); }
+  .footer-contact a:hover{ text-decoration:underline; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <a class="brand" href="index.html">Ilifa<span class="dot">.</span></a>
+  <div class="nav-links">
+    <a href="index.html#talent">For talent</a>
+    <a href="index.html#business">For business</a>
+    <a href="cv-upload.html">Send your CV</a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html#talent">For talent</a>
+  <a href="index.html#business">For business</a>
+  <a href="cv-upload.html">Send your CV</a>
+</div>
+
+<header class="page-hero">
+  <div class="shell" data-reveal>
+    <span class="eyebrow">Understanding qualifications</span>
+    <h1>The NQF, one rung at a time</h1>
+    <p>South Africa's National Qualifications Framework runs from Senior Certificate through to a doctorate. Here's what sits at each level, so you know exactly what a candidate's qualification means.</p>
+  </div>
+</header>
+
+<div class="legend shell" data-reveal>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span>School</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#CFE0FF"></span>Further education &amp; training</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--green-1)"></span>Higher education</span>
+  <span class="legend-item"><span class="legend-dot" style="background:var(--green-2)"></span>Postgraduate</span>
+</div>
+
+<section class="ladder-wrap shell" data-reveal>
+  <div class="ladder">
+
+    <div class="rung">
+      <div class="rung-level">
+        <span class="num">4</span>
+        <span class="num-label">NQF</span>
+      </div>
+      <div class="rung-body">
+        <div>
+          <div class="rung-name">Senior Certificate (Matric)</div>
+          <div class="rung-desc">Completed Grade 12 — the National Senior Certificate. The entry point for most further study and many entry-level roles.</div>
+        </div>
+        <div class="rung-meta">
+          <span class="rung-band band-school">School</span>
+          <a class="rung-btn" href="Candidates.html">View candidates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-level">
+        <span class="num">5</span>
+        <span class="num-label">NQF</span>
+      </div>
+      <div class="rung-body">
+        <div>
+          <div class="rung-name">Higher Certificate</div>
+          <div class="rung-desc">A one-year, occupation-focused qualification from a TVET college or university, usually taken straight after Matric.</div>
+        </div>
+        <div class="rung-meta">
+          <span class="rung-band band-further">FET</span>
+          <a class="rung-btn" href="Candidates.html">View candidates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-level">
+        <span class="num">6</span>
+        <span class="num-label">NQF</span>
+      </div>
+      <div class="rung-body">
+        <div>
+          <div class="rung-name">Diploma / Advanced Certificate</div>
+          <div class="rung-desc">A two- to three-year qualification with a practical, career-oriented focus — often the fastest route into a skilled trade or technical role.</div>
+        </div>
+        <div class="rung-meta">
+          <span class="rung-band band-higher">Higher ed</span>
+          <a class="rung-btn" href="Candidates.html">View candidates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-level">
+        <span class="num">7</span>
+        <span class="num-label">NQF</span>
+      </div>
+      <div class="rung-body">
+        <div>
+          <div class="rung-name">Bachelor's Degree / Advanced Diploma</div>
+          <div class="rung-desc">A three- to four-year university degree, or an advanced diploma building on an NQF 6 qualification. The standard benchmark for graduate roles.</div>
+        </div>
+        <div class="rung-meta">
+          <span class="rung-band band-higher">Higher ed</span>
+          <a class="rung-btn" href="Candidates.html">View candidates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-level">
+        <span class="num">8</span>
+        <span class="num-label">NQF</span>
+      </div>
+      <div class="rung-body">
+        <div>
+          <div class="rung-name">Honours Degree / Postgraduate Diploma</div>
+          <div class="rung-desc">A focused, one-year qualification after a Bachelor's degree, usually including a research component. Common for roles needing deeper specialisation.</div>
+        </div>
+        <div class="rung-meta">
+          <span class="rung-band band-postgrad">Postgrad</span>
+          <a class="rung-btn" href="Candidates.html">View candidates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="rung">
+      <div class="rung-level">
+        <span class="num">9</span>
+        <span class="num-label">NQF</span>
+      </div>
+      <div class="rung-body">
+        <div>
+          <div class="rung-name">Master's Degree</div>
+          <div class="rung-desc">An advanced research or coursework degree built on Honours, typically taking one to two years. Signals real depth in a specialist field.</div>
+        </div>
+        <div class="rung-meta">
+          <span class="rung-band band-postgrad">Postgrad</span>
+          <a class="rung-btn" href="Candidates.html">View candidates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="rung is-current">
+      <div class="rung-level">
+        <span class="num">10</span>
+        <span class="num-label">NQF</span>
+      </div>
+      <div class="rung-body">
+        <div>
+          <div class="rung-name">Doctoral Degree (PhD)</div>
+          <div class="rung-desc">The highest level on the framework — an original research contribution to a field, examined and defended. The ceiling of the NQF.</div>
+        </div>
+        <div class="rung-meta">
+          <span class="rung-band band-postgrad">Postgrad</span>
+          <a class="rung-btn" href="Candidates.html">View candidates
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="notes" data-reveal>
+  <div class="note-card">
+    <h3>Why the NQF matters when hiring</h3>
+    <p>It's a common yardstick. An NQF level tells you where a qualification sits relative to any other, regardless of which institution issued it — useful when comparing candidates across colleges and universities.</p>
+  </div>
+  <div class="note-card">
+    <h3>Level isn't the whole story</h3>
+    <p>Two candidates at the same NQF level can have very different experience. Use the level as a baseline for the qualification itself, and look at years of experience and portfolio work separately.</p>
+  </div>
+  <div class="note-card">
+    <h3>Where Ilifa candidates sit</h3>
+    <p>Most candidates on Ilifa hold an NQF 6 or 7 qualification — a diploma or Bachelor's degree — paired with the practical, field-specific experience shown on their digital CV.</p>
+  </div>
+</section>
+
+<footer>
+  <a class="brand" href="index.html" style="font-size:1.05rem;">Ilifa<span class="dot">.</span></a>
+  <div class="footer-contact">
+    <span>© 2026 Ilifa.</span>
+    <a href="mailto:Zukhanyentlama@gmail.com">Zukhanyentlama@gmail.com</a>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  navToggle.addEventListener('click', () => {
+    const open = mobileNav.classList.toggle('open');
+    navToggle.classList.toggle('open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobileNav.classList.remove('open');
+    navToggle.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  const mainNav = document.getElementById('mainNav');
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY > 12;
+    mainNav.classList.toggle('scrolled', scrolled);
+    toTop.classList.toggle('visible', window.scrollY > 500);
+  }, { passive:true });
+  toTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in-view'));
+  }
+</script>
+
+</body>
+</html>

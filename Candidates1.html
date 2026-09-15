@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ilifa — Choose a qualification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#3C2A18;
+    --ink-soft:#4E381F;
+    --ochre:#B9822F;
+    --ochre-deep:#8F621F;
+    --ochre-soft:#E4B667;
+    --paper:#F5F1E6;
+    --paper-dim:#ECE0CB;
+    --ink-text:#F2E8D8;
+    --charcoal:#241F1A;
+    --sage:#6E8F82;
+    --line:rgba(36,31,26,0.14);
+    --clay:#DCC49E;
+    --green-1:#B7D4A6;
+    --green-2:#6FAE64;
+    --green-3:#276B3E;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--paper);
+    color:var(--charcoal);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  img,svg{display:block;}
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--sage);
+    outline-offset:3px;
+    border-radius:2px;
+  }
+
+  /* ===== Nav ===== */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.1rem clamp(1.25rem,4vw,3rem);
+    background:rgba(245,241,230,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex; align-items:baseline; gap:0.5rem;
+    font-family:'Fraunces',serif; font-weight:600; font-size:1.35rem;
+  }
+  .brand .dot{color:var(--ochre-deep);}
+  .nav-links{
+    display:flex; align-items:center; gap:2rem;
+    font-size:0.92rem; font-weight:500;
+  }
+  .nav-links a{opacity:0.8; transition:opacity .2s;}
+  .nav-links a:hover{opacity:1;}
+  .nav-cta{
+    padding:0.6rem 1.3rem;
+    background:var(--ink);
+    color:var(--ink-text);
+    border-radius:2px;
+    font-size:0.88rem; font-weight:600;
+    transition:background .2s;
+  }
+  .nav-cta:hover{background:var(--ink-soft);}
+  .nav.scrolled{
+    box-shadow:0 4px 18px rgba(36,31,26,0.08);
+    background:rgba(245,241,230,0.96);
+  }
+  .nav-toggle{
+    display:none;
+    width:38px; height:38px;
+    align-items:center; justify-content:center;
+    border-radius:2px;
+    border:1px solid var(--line);
+  }
+  .nav-toggle span{
+    position:relative;
+    display:block;
+    width:18px; height:2px;
+    background:var(--charcoal);
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .nav-toggle span::before,
+  .nav-toggle span::after{
+    content:"";
+    position:absolute; left:0;
+    width:18px; height:2px;
+    background:var(--charcoal);
+    transition:transform .25s ease, top .25s ease;
+  }
+  .nav-toggle span::before{ top:-6px; }
+  .nav-toggle span::after{ top:6px; }
+  .nav-toggle.open span{ background:transparent; }
+  .nav-toggle.open span::before{ top:0; transform:rotate(45deg); }
+  .nav-toggle.open span::after{ top:0; transform:rotate(-45deg); }
+  .mobile-nav{
+    display:none;
+    flex-direction:column;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    max-height:0;
+    transition:max-height .35s ease;
+  }
+  .mobile-nav a{
+    padding:0.9rem clamp(1.25rem,4vw,3rem);
+    font-size:0.95rem; font-weight:500;
+    border-top:1px solid var(--line);
+  }
+  .mobile-nav.open{ max-height:280px; }
+  @media (max-width:820px){
+    .nav-links a:not(.nav-cta){display:none;}
+    .nav-toggle{display:flex;}
+    .mobile-nav{display:flex;}
+  }
+
+  [data-reveal]{
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  [data-reveal].in-view{ opacity:1; transform:translateY(0); }
+
+  .to-top{
+    position:fixed;
+    right:1.25rem; bottom:1.25rem;
+    width:44px; height:44px;
+    border-radius:50%;
+    background:var(--ink);
+    color:var(--ink-text);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(36,31,26,0.25);
+    opacity:0; pointer-events:none;
+    transform:translateY(10px);
+    transition:opacity .25s ease, transform .25s ease;
+    z-index:60;
+  }
+  .to-top.visible{ opacity:1; pointer-events:auto; transform:translateY(0); }
+  .to-top svg{width:18px;height:18px;}
+
+  .shell{ max-width:1120px; margin:0 auto; }
+
+  /* ===== Page intro ===== */
+  .page-hero{
+    padding:clamp(3rem,6vw,4.5rem) clamp(1.25rem,4vw,3rem) 1rem;
+  }
+  .page-hero .eyebrow{ color:var(--sage); margin-bottom:1rem; }
+  .page-hero h1{
+    font-size:clamp(1.9rem,4.2vw,3rem);
+    line-height:1.08;
+    max-width:22ch;
+    margin-bottom:1rem;
+  }
+  .page-hero p{
+    max-width:60ch;
+    font-size:1.02rem;
+    color:rgba(36,31,26,0.72);
+  }
+
+  /* ===== Category groups ===== */
+  .categories{
+    padding:1.5rem clamp(1.25rem,4vw,3rem) 4rem;
+    display:flex;
+    flex-direction:column;
+    gap:1.25rem;
+  }
+  .category{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:1.7rem clamp(1.4rem,3vw,2.2rem) 1.9rem;
+    box-shadow:0 1px 2px rgba(36,31,26,0.03);
+  }
+  .category-head{
+    display:flex; align-items:baseline; gap:0.7rem;
+    margin-bottom:1.2rem;
+    padding-bottom:0.85rem;
+    border-bottom:1px solid var(--line);
+  }
+  .category-head h2{
+    font-size:1.1rem;
+    font-weight:600;
+    letter-spacing:-0.005em;
+  }
+  .category-count{
+    margin-left:auto;
+    font-family:'Space Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:rgba(36,31,26,0.4);
+  }
+  .qual-list{
+    display:flex;
+    flex-direction:column;
+    gap:0.45rem;
+  }
+  .qual-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    padding:0.9rem 1.1rem;
+    background:var(--paper);
+    border:1px solid transparent;
+    border-radius:4px;
+    transition:border-color .18s ease, background .18s ease;
+  }
+  .qual-item:hover{
+    border-color:var(--ochre-deep);
+    background:var(--paper-dim);
+  }
+  .qual-name{
+    font-weight:600;
+    font-size:0.96rem;
+  }
+  .qual-meta{
+    display:flex; align-items:center; gap:1rem;
+  }
+  .qual-arrow{
+    display:flex; align-items:center; justify-content:center;
+    width:28px; height:28px;
+    border-radius:50%;
+    background:var(--paper-dim);
+    color:var(--ink);
+    flex-shrink:0;
+    transition:background .18s ease, color .18s ease;
+  }
+  .qual-item:hover .qual-arrow{ background:var(--ochre-deep); color:var(--ink-text); }
+  .qual-arrow svg{ width:13px; height:13px; }
+
+  .demand-bars{ display:flex; align-items:flex-end; gap:2px; height:15px; }
+  .demand-bars i{ display:block; width:3px; border-radius:1px; background:var(--ochre-deep); opacity:0.22; }
+  .demand-bars i.on{ opacity:0.85; }
+  .demand-bars i:nth-child(1){ height:35%; }
+  .demand-bars i:nth-child(2){ height:60%; }
+  .demand-bars i:nth-child(3){ height:80%; }
+  .demand-bars i:nth-child(4){ height:100%; }
+
+  footer{
+    padding:2.5rem clamp(1.25rem,4vw,3rem);
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:1rem;
+    font-size:0.85rem;
+    color:rgba(36,31,26,0.6);
+  }
+  .footer-contact{ display:flex; align-items:center; gap:0.9rem; flex-wrap:wrap; }
+  .footer-contact a{ font-family:'Space Mono',monospace; font-weight:700; color:var(--ink); }
+  .footer-contact a:hover{ text-decoration:underline; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <a class="brand" href="index.html">Ilifa<span class="dot">.</span></a>
+  <div class="nav-links">
+    <a href="index.html#talent">For talent</a>
+    <a href="index.html#business">For business</a>
+    <a href="cv-upload.html">Send your CV</a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html#talent">For talent</a>
+  <a href="index.html#business">For business</a>
+  <a href="cv-upload.html">Send your CV</a>
+</div>
+
+<header class="page-hero">
+  <div class="shell" data-reveal>
+    <span class="eyebrow">For recruiters</span>
+    <h1 id="pageTitle">Browse qualifications</h1>
+    <p id="pageSubtitle">Pick the field you're hiring for below and we'll open a pre-filled request, tagged with the experience level and qualification you selected.</p>
+  </div>
+</header>
+
+<section class="categories shell" data-reveal>
+
+  <div class="category">
+    <div class="category-head">
+      <h2>Business &amp; Administration</h2>
+      <span class="category-count">6 fields</span>
+    </div>
+    <div class="qual-list">
+      <a class="qual-item" data-qual="Human Resources">
+        <span class="qual-name">Human Resources</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Marketing">
+        <span class="qual-name">Marketing</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Logistics %26 Supply Chain">
+        <span class="qual-name">Logistics &amp; Supply Chain</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Accounting">
+        <span class="qual-name">Accounting</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Business Administration/Management">
+        <span class="qual-name">Business Administration/Management</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Finance">
+        <span class="qual-name">Finance</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category-head">
+      <h2>Tech &amp; Data</h2>
+      <span class="category-count">5 fields</span>
+    </div>
+    <div class="qual-list">
+      <a class="qual-item" data-qual="Information Sciences %26 Systems">
+        <span class="qual-name">Information Sciences &amp; Systems</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Cybersecurity">
+        <span class="qual-name">Cybersecurity</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Computer Science">
+        <span class="qual-name">Computer Science</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Data Science">
+        <span class="qual-name">Data Science</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="AI / Machine Learning">
+        <span class="qual-name">AI / Machine Learning</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category-head">
+      <h2>Engineering</h2>
+      <span class="category-count">6 fields</span>
+    </div>
+    <div class="qual-list">
+      <a class="qual-item" data-qual="Electrical Engineering">
+        <span class="qual-name">Electrical Engineering</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Civil Engineering">
+        <span class="qual-name">Civil Engineering</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Industrial Engineering">
+        <span class="qual-name">Industrial Engineering</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Chemical Engineering">
+        <span class="qual-name">Chemical Engineering</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Mining Engineering">
+        <span class="qual-name">Mining Engineering</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Mechanical Engineering">
+        <span class="qual-name">Mechanical Engineering</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category-head">
+      <h2>Healthcare</h2>
+      <span class="category-count">7 fields</span>
+    </div>
+    <div class="qual-list">
+      <a class="qual-item" data-qual="Occupational Therapy">
+        <span class="qual-name">Occupational Therapy</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Physiotherapy">
+        <span class="qual-name">Physiotherapy</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Pharmacy">
+        <span class="qual-name">Pharmacy</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Public Health">
+        <span class="qual-name">Public Health</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Radiography">
+        <span class="qual-name">Radiography</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Medicine / General Practice">
+        <span class="qual-name">Medicine / General Practice</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Nursing / Healthcare">
+        <span class="qual-name">Nursing / Healthcare</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <div class="category">
+    <div class="category-head">
+      <h2>Law</h2>
+      <span class="category-count">6 fields</span>
+    </div>
+    <div class="qual-list">
+      <a class="qual-item" data-qual="Family Law">
+        <span class="qual-name">Family Law</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Criminal Law">
+        <span class="qual-name">Criminal Law</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Law (Generalist)">
+        <span class="qual-name">Law (Generalist)</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Labour Law">
+        <span class="qual-name">Labour Law</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Tax Law">
+        <span class="qual-name">Tax Law</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+      <a class="qual-item" data-qual="Corporate %26 Commercial Law">
+        <span class="qual-name">Corporate &amp; Commercial Law</span>
+        <span class="qual-meta">
+          <span class="demand-bars" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          <span class="qual-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </span>
+      </a>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  <a class="brand" href="index.html" style="font-size:1.05rem;">Ilifa<span class="dot">.</span></a>
+  <div class="footer-contact">
+    <span>© 2026 Ilifa.</span>
+    <a href="mailto:Zukhanyentlama@gmail.com">Zukhanyentlama@gmail.com</a>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+  // Read the experience level from the URL, e.g. Candidates.html?level=Medium
+  const params = new URLSearchParams(window.location.search);
+  const levelRaw = params.get('level') || 'Low';
+  const level = levelRaw.charAt(0).toUpperCase() + levelRaw.slice(1).toLowerCase();
+
+  const levelCopy = {
+    Low:    { title: 'Browse qualifications', subtitle: "Looking for graduate talent — 1–3 years in? Pick the field below and we'll open a pre-filled request." },
+    Medium: { title: 'Browse qualifications', subtitle: "Looking for established professionals — 1–5 years in? Pick the field below and we'll open a pre-filled request." },
+    High:   { title: 'Browse qualifications', subtitle: "Looking for seasoned specialists — 5+ years in? Pick the field below and we'll open a pre-filled request." }
+  };
+  const copy = levelCopy[level] || levelCopy.Low;
+
+  document.getElementById('pageTitle').textContent = copy.title;
+  document.getElementById('pageSubtitle').textContent = copy.subtitle;
+  document.title = 'Ilifa — Qualifications';
+
+  // Wire up each qualification row to a pre-filled mailto, tagged with level + qualification
+  document.querySelectorAll('.qual-item[data-qual]').forEach(item => {
+    const qual = item.getAttribute('data-qual').replace(/%26/g, '&');
+    const subject = encodeURIComponent(`Recruiter request — ${level} experience — ${qual}`);
+    const body = encodeURIComponent(
+`Hi,
+
+I'm looking to hire ${level}-experience, qualified candidates in ${qual} through Ilifa.
+
+Company:
+Role/s needed:
+Number of hires:
+Location:
+Timeline:`
+    );
+    item.setAttribute('href', `mailto:Zukhanyentlama@gmail.com?subject=${subject}&body=${body}`);
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  navToggle.addEventListener('click', () => {
+    const open = mobileNav.classList.toggle('open');
+    navToggle.classList.toggle('open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobileNav.classList.remove('open');
+    navToggle.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  const mainNav = document.getElementById('mainNav');
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY > 12;
+    mainNav.classList.toggle('scrolled', scrolled);
+    toTop.classList.toggle('visible', window.scrollY > 500);
+  }, { passive:true });
+  toTop.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
+
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in-view'));
+  }
+</script>
+
+</body>
+</html>
